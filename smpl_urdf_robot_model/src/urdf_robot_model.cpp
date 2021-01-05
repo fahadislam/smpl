@@ -138,6 +138,7 @@ bool URDFRobotModel::checkJointLimits(
     for (auto i = 0; i < this->jointVariableCount(); ++i) {
         auto* var = GetVariable(this->robot_model, this->planning_to_state_variable[i]);
         if (!SatisfiesBounds(&this->robot_state, var)) {
+            // printf("joint %d name %s\n", i, var->name.c_str());
             return false;
         }
     }

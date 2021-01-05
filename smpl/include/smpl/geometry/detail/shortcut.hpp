@@ -204,6 +204,7 @@ bool ShortcutPath(
     *ofirst++ = *pfirst;
 
     while (curr_end != plast) {
+
         cost_improved = false;
 
         // expand the segment by granularity, without falling off the edge
@@ -272,6 +273,13 @@ bool ShortcutPath(
                         std::swap(rpath, wpath);
                     }
                 }
+
+                // if (elapsed_time > allowed_time) {
+                //     // printf("Shortcutter timed out\n");
+                //     // curr_end = plast;
+                //     // end_index = psize;
+                //     break;
+                // }
             }
         }
     }

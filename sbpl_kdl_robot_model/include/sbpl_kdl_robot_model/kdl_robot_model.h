@@ -42,7 +42,12 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainfksolvervel_recursive.hpp>
+#include <kdl/chainfdsolver_recursive_newton_euler.hpp>
+#include <kdl/chainidsolver_recursive_newton_euler.hpp>
 #include <kdl/jntarray.hpp>
+#include <kdl/jntarrayvel.hpp>
+#include <kdl/framevel.hpp>
 #include <kdl/tree.hpp>
 #include <smpl/robot_model.h>
 #include <smpl_urdf_robot_model/smpl_urdf_robot_model.h>

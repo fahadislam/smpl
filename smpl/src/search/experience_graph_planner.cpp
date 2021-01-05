@@ -30,7 +30,8 @@ ExperienceGraphPlanner::ExperienceGraphPlanner(
     m_open(),
     m_call_number(0),
     m_eps(5.0),
-    m_expand_count(0)
+    m_expand_count(0),
+    m_shorcut_node_id(-1)
 {
     environment_ = space;
 
@@ -68,7 +69,7 @@ int ExperienceGraphPlanner::replan(
     ++m_call_number;
     m_expand_count = 0;
 
-    SMPL_INFO_NAMED(LOG, "Find path to goal");
+    SMPL_DEBUG_NAMED(LOG, "Find path to goal");
 
     if (!m_start_state || !m_goal_state) {
         SMPL_ERROR("Start or goal state not set");
@@ -97,22 +98,26 @@ int ExperienceGraphPlanner::replan(
         auto now = clock::now();
         double elapsed = std::chrono::duration<double>(now - start_time).count();
         if (elapsed >= allowed_time) {
-            SMPL_INFO_NAMED(LOG, "Ran out of time");
+        // if (m_expand_count > m_allowed_expansions) {
+            SMPL_DEBUG_NAMED(LOG, "Ran out of time");
             break;
         }
 
         SearchState* min_state = m_open.min();
         m_open.pop();
         ++m_expand_count;
+        // printf("expand %d\n", m_expand_count);
+        // printf("h %d\n", min_state->h);
+        // getchar();
 
-        SMPL_DEBUG_NAMED(LOG, "Expand state %d", min_state->state_id);
+        // SMPL_INFO_NAMED(LOG, "Expand state %d h %d", min_state->state_id, min_state->h/2);
 
         min_state->iteration_closed = 1;
 
         // path to goal found
         bool expanded_goal = (min_state == m_goal_state);
         if (min_state->f >= (*fgoal) || expanded_goal) {
-            SMPL_INFO_NAMED(LOG, "Found path to goal. min_f = %ld", min_state->f);
+            SMPL_DEBUG_NAMED(LOG, "Found path to goal. min_f = %ld", min_state->f);
             path_found = true;
             break;
         }
@@ -155,6 +160,7 @@ int ExperienceGraphPlanner::replan(
         if (m_ege) {
             std::vector<int> snap_succs;
             m_egh->getEquivalentStates(min_state->state_id, snap_succs);
+            // printf("snaps %zu\n", snap_succs.size());
 
             for (size_t sidx = 0; sidx < snap_succs.size(); ++sidx) {
                 int snap_id = snap_succs[sidx];
@@ -174,6 +180,10 @@ int ExperienceGraphPlanner::replan(
                 if (new_cost < snap_state->g) {
                     snap_state->g = new_cost;
                     snap_state->f = snap_state->g + (int64_t)(m_eps * (double)snap_state->h);
+                    SMPL_DEBUG_NAMED(LOG, "  Snap: Update state with f = %d + %ld = %ld",
+                            snap_state->g,
+                            (int64_t)(m_eps * (double)snap_state->h),
+                            snap_state->f);
                     snap_state->bp = min_state;
                     if (m_open.contains(snap_state)) {
                         m_open.decrease(snap_state);
@@ -185,6 +195,9 @@ int ExperienceGraphPlanner::replan(
 
             std::vector<int> shortcut_succs;
             m_egh->getShortcutSuccs(min_state->state_id, shortcut_succs);
+            if (shortcut_succs.size() == 1)
+                m_shorcut_node_id = shortcut_succs[0]; // we only have one shortcut node
+            // printf("# scut succs %zu\n", shortcut_succs.size());
 
             for (size_t sidx = 0; sidx < shortcut_succs.size(); ++sidx) {
                 int scut_id = shortcut_succs[sidx];
@@ -204,6 +217,10 @@ int ExperienceGraphPlanner::replan(
                 if (new_cost < scut_state->g) {
                     scut_state->g = new_cost;
                     scut_state->f = scut_state->g + (int64_t)(m_eps * (double)scut_state->h);
+                    SMPL_DEBUG_NAMED(LOG, "  SCUT: Update state with f = %d + %ld = %ld",
+                            scut_state->g,
+                            (int64_t)(m_eps * (double)scut_state->h),
+                            scut_state->f);
                     scut_state->bp = min_state;
                     if (m_open.contains(scut_state)) {
                         m_open.decrease(scut_state);
@@ -214,6 +231,9 @@ int ExperienceGraphPlanner::replan(
             }
         }
     }
+
+    auto end = clock::now();
+    m_planning_time = std::chrono::duration<double>(end - start_time).count();
 
     if (!path_found) {
         return false;
@@ -241,6 +261,16 @@ int ExperienceGraphPlanner::replan(
 
 int ExperienceGraphPlanner::force_planning_from_scratch_and_free_memory()
 {
+    m_open.clear();
+    for (SearchState* s : m_states) {
+        if (s != NULL) {
+            delete s;
+        }
+    }
+    m_states.clear();
+    m_states.shrink_to_fit();
+
+    m_graph_to_search_map.clear();
     return 0;
 }
 
@@ -266,7 +296,7 @@ double ExperienceGraphPlanner::get_initial_eps_planning_time()
 
 double ExperienceGraphPlanner::get_final_eps_planning_time()
 {
-    return 1.0;
+    return m_planning_time;
 }
 
 int ExperienceGraphPlanner::get_n_expands_init_solution()
@@ -314,6 +344,11 @@ int ExperienceGraphPlanner::set_search_mode(bool first_solution_unbounded)
 void ExperienceGraphPlanner::costs_changed(const StateChangeQuery& state_change)
 {
 
+}
+
+int ExperienceGraphPlanner::get_shortcut_node_id()
+{
+    return m_shorcut_node_id;
 }
 
 auto ExperienceGraphPlanner::getSearchState(int state_id) -> SearchState*

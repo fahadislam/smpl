@@ -30,6 +30,24 @@ auto MakeSphereMarker(
     return m;
 }
 
+auto MakeCubeMarker(
+    double x, double y, double z,
+    double length, double width, double height,
+    const std::string& frame_id,
+    const std::string& ns,
+    int id) -> Marker
+{
+    visual::Marker m;
+    m.pose = Affine3(Translation3(x, y, z));
+    m.shape = Cube{length, width, height};
+    m.color = Color{200.0/255, 184.0/255, 124.0/255, 1.0f};
+    m.frame_id = frame_id;
+    m.ns = ns;
+    m.id = id;
+
+    return m;
+}
+
 auto MakeLineMarker(
     const Vector3& a,
     const Vector3& b,

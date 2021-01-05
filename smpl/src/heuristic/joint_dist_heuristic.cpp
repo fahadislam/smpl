@@ -29,6 +29,7 @@
 
 /// \author Andrew Dornbush
 
+#include <smpl/angles.h>
 #include <smpl/heuristic/joint_dist_heuristic.h>
 
 // standard includes
@@ -83,6 +84,10 @@ int JointDistHeuristic::GetGoalHeuristic(int state_id)
     const RobotState& state = m_ers->extractState(state_id);
     assert(goal_state.size() == state.size());
 
+    // printf("state %f %f %f\n", state[0], state[1], state[2]);
+    // printf("goal  %f %f %f\n", goal_state[0], goal_state[1], goal_state[2]);
+
+    // printf("return %d\n", (int)(FIXED_POINT_RATIO * computeJointDistance(state, goal_state)));
     return (int)(FIXED_POINT_RATIO * computeJointDistance(state, goal_state));
 }
 
@@ -127,8 +132,15 @@ double JointDistHeuristic::computeJointDistance(
     const RobotState& t) const
 {
     double dsum = 0.0;
+    std::vector<double> w = {1.0, 1.0, 5.0};
     for (size_t i = 0; i < s.size(); ++i) {
-        double dj = (s[i] - t[i]);
+        double dj;
+        if (i == 2) {
+            dj = w[i] * shortest_angle_dist(s[i], t[i]);
+        }
+        else {
+            dj = w[i] * (s[i] - t[i]);
+        }
         dsum += dj * dj;
     }
     return std::sqrt(dsum);

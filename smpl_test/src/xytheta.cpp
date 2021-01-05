@@ -35,7 +35,7 @@ public:
 
     KinematicVehicleModel() : smpl::RobotModel(), smpl::ForwardKinematicsInterface()
     {
-        const std::vector<std::string> joint_names = { "x", "y" };
+        const std::vector<std::string> joint_names = { "x", "y", "theta" };
         setPlanningJoints(joint_names);
     }
 
@@ -43,7 +43,7 @@ public:
     ///@{
     Eigen::Affine3d computeFK(const smpl::RobotState& state) override
     {
-        return Eigen::Affine3d(Eigen::Translation3d(state[0], state[1], 0.0));
+        return Eigen::Affine3d(Eigen::Translation3d(state[0], state[1], state[2]));
     }
     ///@}
 
@@ -52,7 +52,7 @@ public:
     double minPosLimit(int jidx) const override { return 0.0; }
     double maxPosLimit(int jidx) const override { return 0.0; }
     bool hasPosLimit(int jidx) const override { return false; }
-    bool isContinuous(int jidx) const override { return false; }
+    bool isContinuous(int jidx) const override;
     double velLimit(int jidx) const override { return 0.0; }
     double accLimit(int jidx) const override { return 0.0; }
 
@@ -78,6 +78,16 @@ public:
     }
     ///@}
 };
+
+bool KinematicVehicleModel::isContinuous(int jidx) const
+{
+    if (jidx == 2) {
+        return true;
+    }
+    else {
+        return false; 
+    }
+}
 
 /// \brief Defines a collision checker for an (x,y) point robot in a grid world.
 class GridCollisionChecker : public smpl::CollisionChecker
@@ -135,10 +145,10 @@ bool GridCollisionChecker::isStateValid(
         SMPL_DEBUG("state (%0.3f, %0.3f) is out of bounds", x, y);
         return false;
     }
-    if (m_grid->getDistanceFromPoint(x, y, z) <= 0.0) {
-        SMPL_DEBUG("state (%0.3f, %0.3f) is occupied", x, y);
-        return false;
-    }
+    // if (m_grid->getDistanceFromPoint(x, y, z) <= 0.0) {
+    //     SMPL_DEBUG("state (%0.3f, %0.3f) is occupied", x, y);
+    //     return false;
+    // }
     return true;
 }
 
@@ -347,14 +357,15 @@ int main(int argc, char* argv[])
     // 1. Create Robot Model
     KinematicVehicleModel robot_model;
 
-    const double res = 1.0; //0.02; // match resolution of grid and state space
+    const double res_xy = 0.01; // match resolution of grid and state space
+    const double res_theta = 0.0872665;
 
     // 2. Create and Initialize the Environment
-    const double grid_res = res;
-    const double world_size_x = 50.0;
-    const double world_size_y = 50.0;
-    const double world_size_z = 1.5 * grid_res;
-    const double world_origin_x = 0.0;
+    const double grid_res = res_xy;
+    const double world_size_x = 0.3;
+    const double world_size_y = res_xy;
+    const double world_size_z = M_PI;
+    const double world_origin_x = 0.55;
     const double world_origin_y = 0.0;
     const double world_origin_z = 0.0;
     const double max_distance_m = 4.0;
@@ -366,7 +377,7 @@ int main(int argc, char* argv[])
             max_distance_m,
             ref_count);
     SetupOccupancyGrid(grid);
-    PrintGrid(std::cout, grid);
+    // PrintGrid(std::cout, grid);
 
     // 3. Create Collision Checker
     GridCollisionChecker cc(&grid);
@@ -379,7 +390,7 @@ int main(int argc, char* argv[])
 
     // 7. Initialize Manipulation Lattice with RobotModel, CollisionChecker,
     // variable resolutions, and ActionSpace
-    std::vector<double> resolutions = { res, res };
+    std::vector<double> resolutions = { res_xy, res_xy, res_theta };
     if (!space.init(&robot_model, &cc, resolutions, &actions)) {
         SMPL_ERROR("Failed to initialize Manip Lattice");
         return 1;
@@ -423,18 +434,20 @@ int main(int argc, char* argv[])
 
     // 13. Set start state and goal condition in the Planning Space and
     // propagate state IDs to search
-    double start_x = 0.5 * world_size_x;
-    double start_y = 0.33 * world_size_y;
-    const smpl::RobotState start_state = space.getDiscreteCenter({ start_x, start_y });
+    double start_x = 0.6;
+    double start_y = 0.0;
+    double start_theta = 0.0;
+    const smpl::RobotState start_state = space.getDiscreteCenter({ start_x, start_y, start_theta });
 
     double goal_x = 0.5 * world_size_x;
     double goal_y = 0.66 * world_size_y;
-    const smpl::RobotState goal_state = space.getDiscreteCenter({ goal_x, goal_y });
+    double goal_theta = 0.0;
+    const smpl::RobotState goal_state = space.getDiscreteCenter({ goal_x, goal_y, goal_theta });
 
     smpl::GoalConstraint goal;
     goal.type = smpl::GoalType::JOINT_STATE_GOAL;
-    goal.angles = goal_state;
-    goal.angle_tolerances = { res, res };
+    goal.angles = start_state;
+    goal.angle_tolerances = { res_xy, res_xy, res_theta };  // irrelevant
 
     if (!space.setGoal(goal)) {
         SMPL_ERROR("Failed to set goal");
@@ -474,7 +487,7 @@ int main(int argc, char* argv[])
     search_params.initial_eps = epsilon;
     search_params.final_eps = 1.0;
     search_params.dec_eps = 0.2;
-    search_params.return_first_solution = false;
+    search_params.return_first_solution = true;
     search_params.repair_time = 1.0;
 
     auto then = std::chrono::high_resolution_clock::now();

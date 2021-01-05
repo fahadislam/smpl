@@ -19,6 +19,4 @@
     <depend>sbpl_kdl_robot_model</depend>
     <depend>visualization_msgs</depend>
     <depend>smpl_ompl_interface</depend>
-
-    <exec_depend>pr2_description</exec_depend>
 </package>

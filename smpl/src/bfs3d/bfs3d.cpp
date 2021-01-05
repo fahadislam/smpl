@@ -177,13 +177,13 @@ void BFS_3D::run(int x, int y, int z)
     // initialize starting distance
     m_distance_grid[origin] = 0;
 
-    m_running = true;
-
     // fire off background thread to compute bfs
     m_search_thread = std::thread([&]()
     {
         this->search(m_dim_x, m_dim_xy, m_distance_grid, m_queue, m_queue_head, m_queue_tail);
     });
+
+    m_running = true;
 }
 
 void BFS_3D::run_components(int gx, int gy, int gz)

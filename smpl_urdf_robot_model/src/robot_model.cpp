@@ -368,7 +368,7 @@ bool InitRobotModel(
             v.limits.max_position = std::numeric_limits<double>::infinity();
             if (e.second->limits) {
                 v.limits.max_velocity = e.second->limits->velocity;
-                v.limits.max_effort = e.second->limits->velocity;
+                v.limits.max_effort = e.second->limits->effort;
             } else {
                 v.limits.max_velocity = 0.0;
                 v.limits.max_effort = 0.0;

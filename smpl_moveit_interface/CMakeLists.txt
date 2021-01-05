@@ -7,7 +7,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-option(SMPL_MOVEIT_INTERFACE_QT5 "Build RViz plugin against Qt5" OFF)
+option(SMPL_MOVEIT_INTERFACE_QT5 "Build RViz plugin against Qt5" ON)
 
 find_package(Boost REQUIRED)
 

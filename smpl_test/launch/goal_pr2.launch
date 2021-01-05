@@ -33,7 +33,7 @@
         <!-- planner params -->
         <rosparam command="load" file="$(find smpl_test)/config/pr2_right_arm.yaml"/>
         <param name="planning/mprim_filename" value="$(find smpl_test)/config/pr2.mprim"/>
-        <param name="allowed_planning_time" value="15.0"/>
+        <param name="allowed_planning_time" value="60.0"/>
 
         <!-- 2. scene -->
         <!-- 2.1 robot state -->

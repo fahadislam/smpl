@@ -260,6 +260,8 @@ double EuclidDistHeuristic::computeDistance(
     Quaternion qa(a.rotation());
 
     double dot = qa.dot(qb);
+    dot = std::min(1.0, dot);
+
     if (dot < 0.0) {
         qb = Quaternion(-qb.w(), -qb.x(), -qb.y(), -qb.z());
         dot = qa.dot(qb);

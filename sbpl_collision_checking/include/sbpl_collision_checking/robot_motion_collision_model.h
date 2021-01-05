@@ -365,6 +365,7 @@ void RobotMotionCollisionModel::fillMotionInterpolation(
 {
     motion.setEndpoints(start, finish, variables);
     double max_motion = getMaxSphereMotion(start, finish, variables);
+
     if (max_motion == 0.0) {
         motion.setWaypointCount(0);
     } else {

@@ -273,6 +273,8 @@ PlannerInterface::PlannerInterface(
 
     m_heuristic_factories["joint_distance_egraph"] = MakeJointDistEGraphHeuristic;
 
+    m_heuristic_factories["euclid_egraph"] = MakeEuclidEGraphHeuristic;
+
     /////////////////////////////
     // Setup Planner Factories //
     /////////////////////////////
@@ -779,6 +781,7 @@ bool PlannerInterface::solve(
             res.trajectory);
     res.trajectory.joint_trajectory.header.stamp = ros::Time::now();
 
+    m_params.plan_output_dir = "/home/fislam/paths/";
     if (!m_params.plan_output_dir.empty()) {
         WritePath(m_robot, res.trajectory_start, res.trajectory, m_params.plan_output_dir);
     }
@@ -855,7 +858,7 @@ bool ExtractGoalPoseFromGoalConstraints(
     Eigen::Affine3d& goal_pose)
 {
     assert(!constraints.position_constraints.empty() &&
-           !constraints.orientation_constraints.empty());
+            constraints.orientation_constraints.empty());
 
     // TODO: where is it enforced that the goal position/orientation constraints
     // should be for the planning link?

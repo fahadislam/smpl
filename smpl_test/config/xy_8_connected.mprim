@@ -1,5 +1,4 @@
-Motion_Primitives(degrees): 4 2 0
--1 1
-0 1
-1 0
-1 1
+Motion_Primitives(degrees): 3 3 0
+1 0 0
+0 1 0
+0 0 1

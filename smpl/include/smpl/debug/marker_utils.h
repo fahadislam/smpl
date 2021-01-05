@@ -17,6 +17,13 @@ auto MakeSphereMarker(
     const std::string& ns,
     int id = 0) -> Marker;
 
+auto MakeCubeMarker(
+    double x, double y, double z,
+    double length, double width, double height,
+    const std::string& frame_id,
+    const std::string& ns,
+    int id = 0) -> Marker;
+
 auto MakeLineMarker(
     const Vector3& a,
     const Vector3& b,

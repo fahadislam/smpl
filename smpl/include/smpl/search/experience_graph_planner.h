@@ -83,6 +83,10 @@ public:
     void costs_changed(const StateChangeQuery& state_change) override;
     ///@}
 
+    int get_shortcut_node_id();
+
+    int m_allowed_expansions;
+
 private:
 
     struct SearchState : public heap_element
@@ -121,6 +125,9 @@ private:
     double m_eps;
 
     int m_expand_count;
+    double m_planning_time;
+
+    int m_shorcut_node_id;
 
     SearchState* getSearchState(int state_id);
     SearchState* createState(int state_id);

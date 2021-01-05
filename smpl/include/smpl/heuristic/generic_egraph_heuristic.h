@@ -73,6 +73,10 @@ public:
     void updateGoal(const GoalConstraint& goal) override;
     ///@}
 
+    // void updateStart(const RobotState start);
+
+    bool isReplanCutoffBeforeShortcutNode(double replan_cutoff);
+
     /// \name Heuristic Interface
     ///@{
     int GetGoalHeuristic(int state_id) override;
@@ -94,6 +98,13 @@ private:
 
     std::vector<int> m_component_ids;
     std::vector<std::vector<ExperienceGraph::node_id>> m_shortcut_nodes;
+    std::vector<ExperienceGraph::node_id> m_egraph_nodes;
+
+    std::vector<std::vector<int>> dist_matrix;
+
+    RobotState m_start;
+
+    CollisionChecker* m_checker;
 
     struct HeuristicNode : public heap_element
     {

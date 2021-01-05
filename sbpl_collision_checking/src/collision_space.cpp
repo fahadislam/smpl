@@ -465,7 +465,7 @@ bool CollisionSpace::interpolatePath(
     if (!withinJointPositionLimits(start) ||
         !withinJointPositionLimits(finish))
     {
-        ROS_ERROR_NAMED(LOG, "Joint limits violated");
+        // ROS_ERROR_NAMED(LOG, "Joint limits violated");
         return false;
     }
 
@@ -647,7 +647,7 @@ bool CollisionSpace::withinJointPositionLimits(
             !hasLimit(vidx) ||
             (pos >= minLimit(vidx) && pos <= maxLimit(vidx))))
         {
-            ROS_ERROR_NAMED(LOG, "Joint %zu at position %f outside limits [%f, %f]", vidx, pos, minLimit(vidx), maxLimit(vidx));
+            // ROS_ERROR_NAMED(LOG, "Joint %zu at position %f outside limits [%f, %f]", vidx, pos, minLimit(vidx), maxLimit(vidx));
             return false;
         }
     }

@@ -568,7 +568,7 @@ void ARAStar::reorderOpen()
 
 int ARAStar::computeKey(SearchState* s) const
 {
-    return s->g + (unsigned int)(m_curr_eps * s->h);
+    return (unsigned int)(s->h);
 }
 
 // Get the search state corresponding to a graph state, creating a new state if

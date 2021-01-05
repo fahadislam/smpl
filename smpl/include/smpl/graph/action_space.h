@@ -63,6 +63,8 @@ public:
     virtual void updateStart(const RobotState& state) { }
     virtual void updateGoal(const GoalConstraint& goal) { }
 
+    double m_intercept_time;
+
 private:
 
     RobotPlanningSpace* m_space = nullptr;

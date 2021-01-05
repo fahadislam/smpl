@@ -84,6 +84,33 @@ struct hash<smpl::ManipLatticeState>
     result_type operator()(const argument_type& s) const;
 };
 
+template <typename T>
+struct ValueHash
+{
+    typedef T argument_type;
+    typedef std::size_t result_type;
+    result_type operator()(argument_type s) const 
+    {
+        // std::size_t seed = s.size();
+        // for(auto& i : s) {
+        //     seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        // }
+        // return seed;
+        size_t seed = 0;
+        boost::hash_combine(seed, boost::hash_range(s.begin(), s.end()));
+        return seed;
+    }
+};
+
+// helper struct to test for equality between two pointers by testing for
+// equality between the objects they point to
+template <typename T>
+struct ValueEqual
+{
+    typedef T argument_type;
+    bool operator()(argument_type a, argument_type b) const { return a == b; }
+};
+
 } // namespace std
 
 namespace smpl {
@@ -166,6 +193,9 @@ public:
         std::vector<int>* costs) override;
     ///@}
 
+    void setPathId(int state_id, int path_id);
+    void printAll();
+
 protected:
 
     /// \name discretization methods
@@ -217,6 +247,13 @@ private:
     typedef PointerValueHash<StateKey> StateHash;
     typedef PointerValueEqual<StateKey> StateEqual;
     hash_map<StateKey*, int, StateHash, StateEqual> m_state_to_id;
+
+    typedef ManipLatticeState StateKey2;
+    typedef std::ValueHash<RobotCoord> StateHash2;
+    typedef std::ValueEqual<RobotCoord> StateEqual2;
+    hash_map<RobotCoord, int, StateHash2, StateEqual2> m_state_to_pid;
+
+    // std::unordered_map<std::pair<int, int>, int> mm;
 
     // maps from stateID to coords
     std::vector<ManipLatticeState*> m_states;

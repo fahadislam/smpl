@@ -26,51 +26,51 @@ robot_collision_model:
     type: planar # fixed, floating
   voxels_models:
     - { link_name: base_link, res: 0.01 }
-    - { link_name: bl_caster_rotation_link, res: 0.01 }
-    - { link_name: bl_caster_l_wheel_link, res: 0.01 }
-    - { link_name: bl_caster_r_wheel_link, res: 0.01 }
-    - { link_name: br_caster_rotation_link, res: 0.01 }
-    - { link_name: br_caster_l_wheel_link, res: 0.01 }
-    - { link_name: br_caster_r_wheel_link, res: 0.01 }
-    - { link_name: fl_caster_rotation_link, res: 0.01 }
-    - { link_name: fl_caster_l_wheel_link, res: 0.01 }
-    - { link_name: fl_caster_r_wheel_link, res: 0.01 }
-    - { link_name: fr_caster_rotation_link, res: 0.01 }
-    - { link_name: fr_caster_l_wheel_link, res: 0.01 }
-    - { link_name: fr_caster_r_wheel_link, res: 0.01 }
-    - { link_name: torso_lift_link, res: 0.01 }
-    - { link_name: head_pan_link, res: 0.01 }
-    - { link_name: head_tilt_link, res: 0.01 }
-    - { link_name: l_shoulder_pan_link, res: 0.01 }
-    - { link_name: l_shoulder_lift_link, res: 0.01 }
-    - { link_name: l_upper_arm_roll_link, res: 0.01 }
-    - { link_name: l_upper_arm_link, res: 0.01 }
-    - { link_name: l_elbow_flex_link, res: 0.01 }
-    - { link_name: l_forearm_roll_link, res: 0.01 }
-    - { link_name: l_forearm_link, res: 0.01 }
-    - { link_name: l_wrist_flex_link, res: 0.01 }
-    - { link_name: l_wrist_roll_link, res: 0.01 }
-    - { link_name: l_gripper_palm_link, res: 0.01 }
-    - { link_name: l_gripper_r_finger_link, res: 0.01 }
-    - { link_name: l_gripper_r_finger_tip_link, res: 0.01 }
-    - { link_name: l_gripper_l_finger_link, res: 0.01 }
-    - { link_name: l_gripper_l_finger_tip_link, res: 0.01 }
-    - { link_name: laser_tilt_mount_link, res: 0.01 }
-    - { link_name: r_shoulder_pan_link, res: 0.01 }
-    - { link_name: r_shoulder_lift_link, res: 0.01 }
-    - { link_name: r_upper_arm_roll_link, res: 0.01 }
-    - { link_name: r_upper_arm_link, res: 0.01 }
-    - { link_name: r_elbow_flex_link, res: 0.01 }
-    - { link_name: r_forearm_roll_link, res: 0.01 }
-    - { link_name: r_forearm_link, res: 0.01 }
-    - { link_name: r_wrist_flex_link, res: 0.01 }
-    - { link_name: r_wrist_roll_link, res: 0.01 }
-    - { link_name: r_gripper_palm_link, res: 0.01 }
-    - { link_name: r_gripper_r_finger_link, res: 0.01 }
-    - { link_name: r_gripper_r_finger_tip_link, res: 0.01 }
-    - { link_name: r_gripper_l_finger_link, res: 0.01 }
-    - { link_name: r_gripper_l_finger_tip_link, res: 0.01 }
-    - { link_name: base_bellow_link, res: 0.01 }
+    # - { link_name: bl_caster_rotation_link, res: 0.01 }
+    # - { link_name: bl_caster_l_wheel_link, res: 0.01 }
+    # - { link_name: bl_caster_r_wheel_link, res: 0.01 }
+    # - { link_name: br_caster_rotation_link, res: 0.01 }
+    # - { link_name: br_caster_l_wheel_link, res: 0.01 }
+    # - { link_name: br_caster_r_wheel_link, res: 0.01 }
+    # - { link_name: fl_caster_rotation_link, res: 0.01 }
+    # - { link_name: fl_caster_l_wheel_link, res: 0.01 }
+    # - { link_name: fl_caster_r_wheel_link, res: 0.01 }
+    # - { link_name: fr_caster_rotation_link, res: 0.01 }
+    # - { link_name: fr_caster_l_wheel_link, res: 0.01 }
+    # - { link_name: fr_caster_r_wheel_link, res: 0.01 }
+    # - { link_name: torso_lift_link, res: 0.01 }
+    # - { link_name: head_pan_link, res: 0.01 }
+    # - { link_name: head_tilt_link, res: 0.01 }
+    # - { link_name: l_shoulder_pan_link, res: 0.01 }
+    # - { link_name: l_shoulder_lift_link, res: 0.01 }
+    # - { link_name: l_upper_arm_roll_link, res: 0.01 }
+    # - { link_name: l_upper_arm_link, res: 0.01 }
+    # - { link_name: l_elbow_flex_link, res: 0.01 }
+    # - { link_name: l_forearm_roll_link, res: 0.01 }
+    # - { link_name: l_forearm_link, res: 0.01 }
+    # - { link_name: l_wrist_flex_link, res: 0.01 }
+    # - { link_name: l_wrist_roll_link, res: 0.01 }
+    # - { link_name: l_gripper_palm_link, res: 0.01 }
+    # - { link_name: l_gripper_r_finger_link, res: 0.01 }
+    # - { link_name: l_gripper_r_finger_tip_link, res: 0.01 }
+    # - { link_name: l_gripper_l_finger_link, res: 0.01 }
+    # - { link_name: l_gripper_l_finger_tip_link, res: 0.01 }
+    # - { link_name: laser_tilt_mount_link, res: 0.01 }
+    # - { link_name: r_shoulder_pan_link, res: 0.01 }
+    # - { link_name: r_shoulder_lift_link, res: 0.01 }
+    # - { link_name: r_upper_arm_roll_link, res: 0.01 }
+    # - { link_name: r_upper_arm_link, res: 0.01 }
+    # - { link_name: r_elbow_flex_link, res: 0.01 }
+    # - { link_name: r_forearm_roll_link, res: 0.01 }
+    # - { link_name: r_forearm_link, res: 0.01 }
+    # - { link_name: r_wrist_flex_link, res: 0.01 }
+    # - { link_name: r_wrist_roll_link, res: 0.01 }
+    # - { link_name: r_gripper_palm_link, res: 0.01 }
+    # - { link_name: r_gripper_r_finger_link, res: 0.01 }
+    # - { link_name: r_gripper_r_finger_tip_link, res: 0.01 }
+    # - { link_name: r_gripper_l_finger_link, res: 0.01 }
+    # - { link_name: r_gripper_l_finger_tip_link, res: 0.01 }
+    # - { link_name: base_bellow_link, res: 0.01 }
 
     # Links with Trivial Collision Geometry (probably used for visualization,
     # stated here for reference)
@@ -119,6 +119,13 @@ robot_collision_model:
 #    - link_name: base_laser_link
 #    - link_name: torso_lift_motor_screw_link
   spheres_models:
+    - link_name: conveyor_object_link
+      auto: false
+      spheres:
+        - { name: co0, x: 0.025, y: 0.0, z: 0.025, radius: 0.0, priority: 1 }
+        - { name: co1, x: -0.025, y: 0.0, z: -0.025, radius: 0.0, priority: 1 }
+        - { name: co2, x: -0.025, y: 0.0, z: 0.025, radius: 0.0, priority: 1 }
+        - { name: co3, x: 0.025, y: 0.0, z: -0.025, radius: 0.0, priority: 1 }
     - link_name: base_link
       auto: false
       spheres:
@@ -314,6 +321,7 @@ robot_collision_model:
         - name: r_gripper_r_finger_tip_link
         - name: r_gripper_l_finger_link
         - name: r_gripper_l_finger_tip_link
+        - name: conveyor_object_link
     - name: left_gripper
       links:
         - name: l_gripper_palm_link

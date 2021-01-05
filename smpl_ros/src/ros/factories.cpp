@@ -299,6 +299,8 @@ auto MakeManipLatticeEGraph(
     } else {
         SMPL_WARN("No experience graph file parameter");
     }
+    egraph_path = "/home/fislam/paths/";
+    (void)space->loadExperienceGraph(egraph_path);
 
     return std::move(space);
 }
@@ -593,6 +595,27 @@ auto MakeJointDistEGraphHeuristic(
 
     auto h = make_unique<JointDistEGraphHeuristic>();
     if (!h->init(space, &h->jd)) {
+        return nullptr;
+    }
+
+    double egw;
+    params.param("egraph_epsilon", egw, 1.0);
+    h->setWeightEGraph(egw);
+    return std::move(h);
+};
+
+auto MakeEuclidEGraphHeuristic(
+    RobotPlanningSpace* space,
+    const PlanningParams& params)
+    -> std::unique_ptr<RobotHeuristic>
+{
+    struct EuclidEGraphHeuristic : public GenericEgraphHeuristic {
+        EuclidDistHeuristic euc;
+    };
+
+    auto h = make_unique<EuclidEGraphHeuristic>();
+    h->euc.init(space);
+    if (!h->init(space, &h->euc)) {
         return nullptr;
     }
 

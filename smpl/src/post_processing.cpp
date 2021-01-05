@@ -52,14 +52,17 @@ double distance(
     const RobotState& to)
 {
     double dist = 0.0;
-    for (size_t vidx = 0; vidx < robot.getPlanningJoints().size(); ++vidx) {
-        if (!robot.hasPosLimit(vidx)) {
-            dist += angles::shortest_angle_dist(to[vidx], from[vidx]);
-        }
-        else {
-            dist += fabs(to[vidx] - from[vidx]);
-        }
-    }
+    dist = to.back() - from.back();
+
+    assert(dist >= 0.0);
+    // for (size_t vidx = 0; vidx < robot.getPlanningJoints().size(); ++vidx) {
+    //     if (!robot.hasPosLimit(vidx)) {
+    //         dist += angles::shortest_angle_dist(to[vidx], from[vidx]);
+    //     }
+    //     else {
+    //         dist += fabs(to[vidx] - from[vidx]);
+    //     }
+    // }
     return dist;
 }
 
@@ -99,15 +102,21 @@ public:
     JointPositionShortcutPathGenerator(RobotModel* rm, CollisionChecker* cc) :
         m_robot(rm),
         m_cc(cc)
-    { }
+    {
+        m_t_start = clock::now();
+        m_t_allowed = to_duration(0.1);
+    }
 
     template <typename OutputIt>
     bool operator()(
         const RobotState& start, const RobotState& finish,
         OutputIt ofirst, double& cost) const
     {
+        // if (clock::now() - m_t_start > m_t_allowed) {
+        //     return false;
+        // }
         const size_t var_count = m_robot->getPlanningJoints().size();
-        if (m_cc->isStateToStateValid(start, finish)) {
+        if (m_cc->isStateToStateValid(start, finish, true)) {
             *ofirst++ = start;
             *ofirst++ = finish;
             cost = distance(*m_robot, start, finish);
@@ -122,6 +131,9 @@ private:
 
     RobotModel* m_robot;
     CollisionChecker* m_cc;
+
+    clock::time_point m_t_start;
+    clock::duration m_t_allowed;
 };
 
 class JointPositionVelocityShortcutPathGenerator
@@ -349,10 +361,9 @@ void ShortcutPath(
     }
 
     auto now = clock::now();
-    SMPL_INFO("Path shortcutting took %0.3f seconds", std::chrono::duration<double>(now - then).count());
-
-    SMPL_INFO("Original path: waypoint count: %zu, cost: %0.3f", pin.size(), prev_cost);
-    SMPL_INFO("Shortcutted path: waypount_count: %zu, cost: %0.3f", pout.size(), next_cost);
+    SMPL_DEBUG("Path shortcutting took %0.3f seconds", std::chrono::duration<double>(now - then).count());
+    SMPL_DEBUG("Original path: waypoint count: %zu, cost: %0.3f", pin.size(), prev_cost);
+    SMPL_DEBUG("Shortcutted path: waypount_count: %zu, cost: %0.3f", pout.size(), next_cost);
 }
 
 bool CreatePositionVelocityPath(

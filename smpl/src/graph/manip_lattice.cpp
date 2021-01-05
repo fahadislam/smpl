@@ -48,6 +48,14 @@
 #include <smpl/spatial.h>
 #include "../profiling.h"
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/unordered_map.hpp>
+#include <boost/serialization/vector.hpp>
+#include <fstream>
+#include <iostream>
+
+
 auto std::hash<smpl::ManipLatticeState>::operator()(
     const argument_type& s) const -> result_type
 {
@@ -195,7 +203,7 @@ void ManipLattice::PrintState(int stateID, bool verbose, FILE* fout)
 }
 
 void ManipLattice::GetSuccs(
-    int state_id,
+int state_id,
     std::vector<int>* succs,
     std::vector<int>* costs)
 {
@@ -206,9 +214,9 @@ void ManipLattice::GetSuccs(
     SMPL_DEBUG_NAMED(G_EXPANSIONS_LOG, "expanding state %d", state_id);
 
     // goal state should be absorbing
-    if (state_id == m_goal_state_id) {
-        return;
-    }
+    // if (state_id == m_goal_state_id) {
+    //     return;
+    // }
 
     ManipLatticeState* parent_entry = m_states[state_id];
 
@@ -220,7 +228,7 @@ void ManipLattice::GetSuccs(
     SMPL_DEBUG_STREAM_NAMED(G_EXPANSIONS_LOG, "  angles: " << parent_entry->state);
 
     auto* vis_name = "expansion";
-    SV_SHOW_DEBUG_NAMED(vis_name, getStateVisualization(parent_entry->state, vis_name));
+    SV_SHOW_INFO_NAMED(vis_name, getStateVisualization(parent_entry->state, vis_name));
 
     int goal_succ_count = 0;
 
@@ -254,26 +262,26 @@ void ManipLattice::GetSuccs(
         ManipLatticeState* succ_entry = getHashEntry(succ_state_id);
 
         // check if this state meets the goal criteria
-        auto is_goal_succ = isGoal(action.back());
-        if (is_goal_succ) {
-            // update goal state
-            ++goal_succ_count;
-        }
+        // auto is_goal_succ = isGoal(action.back());
+        // if (is_goal_succ) {
+        //     // update goal state
+        //     ++goal_succ_count;
+        // }
 
         // put successor on successor list with the proper cost
-        if (is_goal_succ) {
-            succs->push_back(m_goal_state_id);
-        } else {
+        // if (is_goal_succ) {
+        //     succs->push_back(m_goal_state_id);
+        // } else {
             succs->push_back(succ_state_id);
-        }
-        costs->push_back(cost(parent_entry, succ_entry, is_goal_succ));
+        // }
+        costs->push_back(cost(parent_entry, succ_entry, false));
 
         // log successor details
         SMPL_DEBUG_NAMED(G_EXPANSIONS_LOG, "      succ: %zu", i);
         SMPL_DEBUG_NAMED(G_EXPANSIONS_LOG, "        id: %5i", succ_state_id);
         SMPL_DEBUG_STREAM_NAMED(G_EXPANSIONS_LOG, "        coord: " << succ_coord);
         SMPL_DEBUG_STREAM_NAMED(G_EXPANSIONS_LOG, "        state: " << succ_entry->state);
-        SMPL_DEBUG_NAMED(G_EXPANSIONS_LOG, "        cost: %5d", cost(parent_entry, succ_entry, is_goal_succ));
+        SMPL_DEBUG_NAMED(G_EXPANSIONS_LOG, "        cost: %5d", cost(parent_entry, succ_entry, false));
     }
 
     if (goal_succ_count > 0) {
@@ -774,6 +782,31 @@ auto ManipLattice::getStateVisualization(
     return markers;
 }
 
+void ManipLattice::setPathId(int state_id, int path_id)
+{
+    auto entry = getHashEntry(state_id);
+    m_state_to_pid[entry->coord] = path_id;
+
+    SMPL_INFO_NAMED(G_LOG, "  state id: %d,     path id: %d", state_id, path_id);
+}
+
+void ManipLattice::printAll()
+{
+    printf("Printing lookup table\n");
+    for (const auto& v : m_state_to_pid) {
+        SMPL_INFO_STREAM_NAMED(G_EXPANSIONS_LOG, "  coord: " << v.first << '\t' << v.second);
+    }
+
+    std::ofstream ofs("energy_map");
+    // boost::archive::binary_oarchive oa(ofs);
+
+    // boost::filesystem::path myFile = boost::filesystem::current_path() / "myfile.dat";
+    // boost::filesystem::ofstream ofs(myFile);
+    // boost::archive::text_oarchive ta(ofs);
+
+    // oa << m_state_to_pid;
+}
+
 bool ManipLattice::setStart(const RobotState& state)
 {
     SMPL_DEBUG_NAMED(G_LOG, "set the start state");
@@ -783,7 +816,7 @@ bool ManipLattice::setStart(const RobotState& state)
         return false;
     }
 
-    SMPL_DEBUG_STREAM_NAMED(G_LOG, "  state: " << state);
+    SMPL_INFO_STREAM_NAMED(G_LOG, "  state: " << state);
 
     // check joint limits of starting configuration
     if (!robot()->checkJointLimits(state, true)) {
@@ -1089,9 +1122,9 @@ bool ManipLattice::setGoalConfiguration(const GoalConstraint& goal)
     auto vis_name = "target_config";
     SV_SHOW_INFO_NAMED(vis_name, getStateVisualization(goal.angles, vis_name));
 
-    SMPL_INFO_NAMED(G_LOG, "A new goal has been set");
-    SMPL_INFO_STREAM_NAMED(G_LOG, "  config: " << goal.angles);
-    SMPL_INFO_STREAM_NAMED(G_LOG, "  tolerance: " << goal.angle_tolerances);
+    SMPL_DEBUG_NAMED(G_LOG, "A new goal has been set");
+    SMPL_DEBUG_STREAM_NAMED(G_LOG, "  config: " << goal.angles);
+    SMPL_DEBUG_STREAM_NAMED(G_LOG, "  tolerance: " << goal.angle_tolerances);
 
     // notify observers of updated goal
     return RobotPlanningSpace::setGoal(goal);
